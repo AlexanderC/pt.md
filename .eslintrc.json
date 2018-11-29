@@ -1,0 +1,12 @@
+{
+    "extends": "airbnb-base",
+    "plugins": [
+        "mocha"
+    ],
+    "rules": {
+        "mocha/no-exclusive-tests": "error",
+        "arrow-body-style": 0,
+        "no-underscore-dangle": 0,
+        "no-prototype-builtins": 0
+    }
+}

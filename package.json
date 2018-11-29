@@ -1,0 +1,44 @@
+{
+  "name": "pt.md",
+  "version": "1.0.0",
+  "description": "Library for working with https://pt.md",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "$(npm bin)/mocha test --timeout 99999 --ui tdd --slow 1500",
+    "lint": "$(npm bin)/eslint src/ --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexanderC/pt.md.git"
+  },
+  "keywords": [
+    "pt.md",
+    "post",
+    "terminal",
+    "moldova",
+    "posta",
+    "tracking"
+  ],
+  "author": "AlexanderC <alexander.moldova@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AlexanderC/pt.md/issues"
+  },
+  "homepage": "https://github.com/AlexanderC/pt.md#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-mocha": "^5.2.0",
+    "mocha": "^5.2.0"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.2",
+    "cookie": "^0.3.1",
+    "debug": "^4.1.0",
+    "deepmerge": "^2.2.1",
+    "form-data": "^2.3.3"
+  }
+}
