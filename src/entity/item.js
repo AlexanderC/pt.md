@@ -1,29 +1,32 @@
+/* eslint no-restricted-syntax: 0, no-continue: 0 */
+
 const Base = require('./base');
+const String = require('../helper/string');
 
 /**
  * @class Item
  * @property {number} rowNum
- * @property {number} OrderID
- * @property {Date} OrderDate
- * @property {number} OrderStateID
- * @property {string} OrderStateCode
- * @property {string} OrderStateName
- * @property {string} GoodsName
- * @property {string} ShopCompanyName
- * @property {string} DeliveryCompanyName
- * @property {number} InvoiceID
- * @property {string} InvoiceNumber
- * @property {number} InvoicePaymentStateID
- * @property {number} PackageWidth
- * @property {number} PackageHeight
- * @property {number} PackageDepth
- * @property {number} PackageWeight
- * @property {number} TerminalCode
- * @property {number} ModuleCode
- * @property {number} CellCode
- * @property {string} CellCategoryName
- * @property {Date} CellTimeBegin
- * @property {Date} CellTimeEnd
+ * @property {number} orderID
+ * @property {Date} orderDate
+ * @property {number} orderStateID
+ * @property {string} orderStateCode
+ * @property {string} orderStateName
+ * @property {string} goodsName
+ * @property {string} shopCompanyName
+ * @property {string} deliveryCompanyName
+ * @property {number} invoiceID
+ * @property {string} invoiceNumber
+ * @property {number} invoicePaymentStateID
+ * @property {number} packageWidth
+ * @property {number} packageHeight
+ * @property {number} packageDepth
+ * @property {number} packageWeight
+ * @property {number} terminalCode
+ * @property {number} moduleCode
+ * @property {number} cellCode
+ * @property {string} cellCategoryName
+ * @property {Date} cellTimeBegin
+ * @property {Date} cellTimeEnd
  */
 class Item extends Base {
   /**
@@ -32,25 +35,52 @@ class Item extends Base {
   static transform(data) {
     const { OrderDate, CellTimeBegin, CellTimeEnd } = data;
 
-    return Object.assign(data, {
+    const customData = Object.assign(data, {
       OrderDate: OrderDate ? new Date(OrderDate) : null,
       CellTimeBegin: CellTimeBegin ? new Date(CellTimeBegin) : null,
       CellTimeEnd: CellTimeEnd ? new Date(CellTimeEnd) : null,
     });
+
+    for (const key of Object.keys(customData)) {
+      const normalizedKey = String.lcfirst(key);
+
+      if (normalizedKey === key) {
+        continue;
+      }
+
+      customData[normalizedKey] = customData[key];
+      delete customData[key];
+    }
+
+    return customData;
   }
 
   /**
    * Check if invoice is paid
    */
   get isPaid() {
-    return this.InvoicePaymentStateID === 12990;
+    return this.invoicePaymentStateID === 12990;
   }
 
   /**
    * Get payment URI
+   * @todo Decide to return payment URL anyway
    */
-  get paymentUri() {
-    return `https://pt.md/BeneficiarZone/TransactionJournal/CardPayOrder?id=${this.OrderID}`;
+  get paymentURI() {
+    if (this.isPaid) {
+      return null;
+    }
+
+    return `https://pt.md/BeneficiarZone/TransactionJournal/CardPayOrder?id=${this.orderID}`;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  toJSON() {
+    const { isPaid, paymentURI } = this;
+
+    return Object.assign({ isPaid, paymentURI }, super.toJSON());
   }
 }
 

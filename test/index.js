@@ -4,11 +4,10 @@ const { expect } = require('chai');
 const Pt = require('../src');
 
 suite('pt.md', async () => {
-  let pt, username, password;
+  const pt = Pt.create();
+  let username, password;
 
   setup(async () => {
-    pt = Pt.create();
-
     const { USER, PASS } = process.env;
 
     if (!USER || !PASS) {
@@ -20,12 +19,7 @@ suite('pt.md', async () => {
   });
 
   suite('Pt', async () => {
-    test('should authenticate and list items', async () => {
-      const yesterday = new Date(Date.now() - 86400000);
-      const now = new Date();
-      const page = 1;
-      const pageSize = 100;
-
+    test('should authenticate', async () => {
       let error = null;
 
       try {
@@ -34,26 +28,19 @@ suite('pt.md', async () => {
         error = e;
       }
 
-      const { total, items } = await pt.list(yesterday, now, page, pageSize);
-console.log('total', total)
-console.log('items', ...items)
-      expect(total).to.be.gte(0);
-      expect(items).to.be.an('array');
-
       expect(error).to.be.null;
     });
 
-//     test('should list items', async () => {
-//       const yesterday = new Date(Date.now() - 86400000);
-//       const now = new Date();
-//       const page = 1;
-//       const pageSize = 100;
+    test('should list items', async () => {
+      const yesterday = new Date(Date.now() - 86400000);
+      const now = new Date();
+      const page = 1;
+      const pageSize = 100;
 
-//       const { total, items } = await pt.list(yesterday, now, page, pageSize);
-// console.log('total', ...total)
-// console.log('items', ...items)
-//       expect(total).to.be.gte(0);
-//       expect(items).to.be.an('array');
-//     });
+      const { total, items } = await pt.list(yesterday, now, page, pageSize);
+
+      expect(total).to.be.gte(0);
+      expect(items).to.be.an('array');
+    });
   });
 });

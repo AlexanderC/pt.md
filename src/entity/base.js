@@ -1,11 +1,11 @@
-/* eslint no-underscore-dangle:0 */
+/* eslint no-underscore-dangle:0, no-restricted-syntax: 0 */
 
 class BaseEntity {
   /**
    * @param {*} rawData
    */
   constructor(rawData) {
-    this.$rawData = this.transform(rawData);
+    this.$rawData = this.constructor.transform(rawData);
 
     this._assign();
   }
@@ -23,6 +23,20 @@ class BaseEntity {
    */
   _assign() {
     Object.assign(this, this.$rawData);
+  }
+
+  /**
+   * JSON representation object
+   */
+  toJSON() {
+    const keys = Object.keys(this.$rawData);
+    const result = {};
+
+    for (const key of keys) {
+      result[key] = this[key];
+    }
+
+    return result;
   }
 }
 

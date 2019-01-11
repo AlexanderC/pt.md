@@ -41,9 +41,7 @@ class Response {
       return this._customData;
     }
 
-    return this.$rawResponse.data && this.$rawResponse.data.data
-      ? this.$rawResponse.data.data
-      : this.$rawResponse.data;
+    return this.$rawResponse.data;
   }
 
   /**
@@ -83,9 +81,41 @@ class Response {
    */
   get cookie() {
     return cookie.parse(
-      this.$rawResponse.headers['set-cookie'][0]
-        || this.$rawResponse.headers['cookie'],
+      ((this.$rawResponse.headers['set-cookie']
+        && this.$rawResponse.headers['set-cookie'][0])
+          || this.$rawResponse.headers['cookie']) || '',
     );
+  }
+
+  /**
+   * Convert response to JSON representation object
+   */
+  toJSON() {
+    const {
+      data, status, statusText, headers, config,
+    } = this.$rawResponse;
+
+    const {
+      isOk, cookie: cookieObj, isRawOk, error, data: processedData, status: processedStatus,
+    } = this;
+
+    return {
+      raw: {
+        data: Response._truncateDataRepr(data),
+        status,
+        statusText,
+        headers,
+        config,
+      },
+      processed: {
+        isOk,
+        isRawOk,
+        error,
+        cookie: cookieObj,
+        data: Response._truncateDataRepr(processedData),
+        status: processedStatus,
+      },
+    };
   }
 
   /**
@@ -93,6 +123,18 @@ class Response {
    */
   static get ERROR_REGEXP() {
     return /^\/Error\//;
+  }
+
+  /**
+   * Truncate data representation
+   * @param {*} data
+   */
+  static _truncateDataRepr(data) {
+    if (typeof data === 'string' && data.length > 1000) {
+      return data.substr(0, 1000);
+    }
+
+    return data;
   }
 }
 

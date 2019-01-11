@@ -1,4 +1,3 @@
-const axios = require('axios');
 const Request = require('./request');
 const MissingEndpoint = require('./error/missing-endpoint');
 const debug = require('../helper/debug')(__filename);

@@ -6,13 +6,13 @@ const endpoint = require('./endpoint');
 const Item = require('../entity/item');
 
 module.exports = {
-  loginPrerequisites: endpoint({
+  'login.1': endpoint({
     method: 'get',
     url: '/Account/Login',
     async process(response) {
       if (response.isOk) {
         const $ = cheerio.load(response.data);
-        const verificationTokenInput = $('#main > div > div > div > form > input[name="__RequestVerificationToken"]');
+        const verificationTokenInput = $('input[name="__RequestVerificationToken"]');
         const { __RequestVerificationToken } = response.cookie;
 
         response.customData = {
@@ -24,7 +24,7 @@ module.exports = {
       return response;
     },
   }),
-  login: endpoint({
+  'login.2': endpoint({
     method: 'post',
     url: '/Account/Login',
     data: {
@@ -32,9 +32,13 @@ module.exports = {
       Password: null,
       __RequestVerificationToken: null, // This should be set by calling setup()
     },
+    maxRedirects: 0,
+    validateStatus(status) {
+      return status === 302;
+    },
     headers: {
-      'Content-Type': 'multipart/form-data',
-      Cookie: '__RequestVerificationToken=null', // This should be set by calling setup()
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Cookie': '__RequestVerificationToken=null', // This should be set by calling setup()
     },
     async setup(defaults, verificationToken, verificationCookie) {
       return merge(defaults, {
@@ -42,14 +46,52 @@ module.exports = {
           __RequestVerificationToken: verificationToken,
         },
         headers: {
-          Cookie: `__RequestVerificationToken=${verificationCookie}`,
+          'Cookie': `__RequestVerificationToken=${verificationCookie}`,
         },
       });
+    },
+    async process(response) {
+      if (response.isOk) {
+        response.customData = { aspxauth: response.cookie['.ASPXAUTH'] };
+      }
+
+      return response;
+    },
+  }),
+  'login.3': endpoint({
+    method: 'get',
+    url: '/BeneficiarZone/BHome',
+    data: {
+      UserName: null,
+      Password: null,
+      __RequestVerificationToken: null, // This should be set by calling setup()
+    },
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Cookie': '__RequestVerificationToken=null; .ASPXAUTH=null', // This should be set by calling setup()
+    },
+    async setup(defaults, verificationToken, verificationCookie, aspxauth) {
+      return merge(defaults, {
+        data: {
+          __RequestVerificationToken: verificationToken,
+        },
+        headers: {
+          'Cookie': `__RequestVerificationToken=${verificationCookie}; .ASPXAUTH=${aspxauth}`,
+        },
+      });
+    },
+    async process(response) {
+      if (response.isOk) {
+        response.customData = { sessionId: response.cookie['ASP.NET_SessionId'] };
+      }
+
+      return response;
     },
   }),
   list: endpoint({
     method: 'get',
     url: '/BeneficiarZone/TransactionJournal/TransactionViewAndPay',
+    withCredentials: true,
     params: {
       page: 1,
       pageSize: 100,
@@ -60,19 +102,14 @@ module.exports = {
       'Content-Type': 'application/json; charset=utf-8',
       'Accept': 'application/json, text/javascript, */*; q=0.01',
       'X-Requested-With': 'XMLHttpRequest',
-      'Referer': 'https://pt.md/beneficiarzone/transactionjournal/viewandpay',
     },
     async process(response) {
-      response.customData = { total: 0, items: [] };
-
-      if (response.isOk) {
-        response.customData = {
-          total: response.data.MaxCountData || null,
-          items: Array.isArray(response.data.data)
-            ? response.data.data.map(data => new Item(data))
-            : null,
-        };
-      }
+      response.customData = response.isOk ? {
+        total: response.data.MaxCountData || null,
+        items: Array.isArray(response.data.data)
+          ? response.data.data.map(data => new Item(data))
+          : null,
+      } : { total: 0, items: [] };
 
       return response;
     },

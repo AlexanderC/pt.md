@@ -24,7 +24,7 @@ class Request {
   async send(params = {}, data = {}) {
     const options = await this.config.options(merge(this.defaults, this.config), params, data);
 
-    debug(`send:${this.name}`, options);
+    debug(`request:${this.name}`, options);
 
     let response;
 
@@ -34,19 +34,15 @@ class Request {
       throw new InvalidResponse(error.message);
     }
 
-    debug(`response:${this.name}:raw`, response);
-
     response = new Response(response);
-
-    debug(`response:${this.name}:created`, response);
 
     if (!response.isOk) {
       throw new InvalidResponse(response.error);
     }
 
-    response = this.config.process(response);
+    response = await this.config.process(response);
 
-    debug(`response:${this.name}:processed`, response);
+    debug(`response:${this.name}`, JSON.stringify(response, null, '  '));
 
     return response;
   }
