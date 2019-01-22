@@ -13,12 +13,33 @@ npm install pt.md
 
 ## Usage
 
+CLI Tool:
+
+```bash
+alexanderc@MacBook-Pro:~/$ pt.md --help
+pt.md [command]
+
+Commands:
+  pt.md configure  Configure pt.md client
+  pt.md list       List current deliveries
+
+Options:
+  --version   Show version number                                      [boolean]
+  -h, --help  Show help                                                [boolean]
+
+Made with ♡ by AlexanderC
+```
+
+> To Authenticate pt.md client run `pt.md configure` first.
+
+Programmatic:
+
 ```javascript
-Pt = require('pt.md');
+const Pt = require('pt.md');
 
 // Authenticate
 
-const username = 'user@example.com'
+const username = 'user@example.com';
 const password = 'qwe123';
 
 const pt = Pt.create();
