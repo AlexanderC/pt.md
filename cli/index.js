@@ -5,6 +5,7 @@ const { prompt } = require('enquirer');
 const chalk = require('chalk');
 const Table = require('terminal-table');
 const terminalLink = require('terminal-link');
+const yargs = require('yargs');
 const pkg = require('../package.json');
 const Pt = require('../src/index');
 const debug = require('../src/helper/debug')(__filename);
@@ -76,7 +77,7 @@ function display(items) {
   console.log(table.toString()); // eslint-disable-line
 }
 
-require('yargs') // eslint-disable-line
+yargs // eslint-disable-line
   .command(
     'configure',
     'Configure pt.md client',
@@ -104,7 +105,7 @@ require('yargs') // eslint-disable-line
   .command(
     'list',
     'List current deliveries',
-    (yargs) => {
+    (yargs) => { // eslint-disable-line
       const last7Days = new Date(Date.now() - 86400000 * 7);
 
       return yargs
@@ -167,7 +168,9 @@ require('yargs') // eslint-disable-line
       }
     },
   )
+  .command({ command: '*', handler() { yargs.showHelp(); } })
   .help('h')
   .alias('h', 'help')
   .epilog('Made with ♡ by AlexanderC')
+  .scriptName(pkg.name)
   .argv;
