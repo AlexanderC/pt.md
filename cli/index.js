@@ -46,13 +46,15 @@ function display(items) {
 
   table.push(
     [
-      'Paid', 'Id', 'Date', 'Status', 'Shop', 'Goods Name', 'Delivery Company', 'Actions',
+      'Paid', 'Id', 'Order Date', 'Status', 'Cell', 'Pickup Interval', 'Shop', 'Goods Name', 'Delivery Company', 'Actions',
     ].map(col => chalk.gray(col)),
   );
 
   for (const item of items) { // eslint-disable-line
     const {
-      isPaid, orderID, orderDate, orderStateCode, shopCompanyName, goodsName, deliveryCompanyName,
+      isPaid, orderID, orderDate, orderStateCode,
+      shopCompanyName, goodsName, deliveryCompanyName,
+      cellCode, cellCategoryName, cellTimeBegin, cellTimeEnd,
     } = item;
 
     const row = [
@@ -60,6 +62,10 @@ function display(items) {
       orderID,
       orderDate.toGMTString(),
       orderStateCode,
+      cellCode ? chalk.green(`${cellCode} (${cellCategoryName})`) : chalk.blue('N/A'),
+      cellTimeEnd
+        ? `${chalk.green(cellTimeBegin.toDateString())} to ${chalk.green(cellTimeEnd.toDateString())}`
+        : chalk.blue('N/A'),
       shopCompanyName || chalk.blue('N/A'),
       goodsName,
       deliveryCompanyName,
