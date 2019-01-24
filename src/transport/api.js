@@ -114,4 +114,12 @@ module.exports = {
       return response;
     },
   }),
+  paymentPage: endpoint({
+    method: 'get',
+    url: '/BeneficiarZone/TransactionJournal/CardPayOrder',
+    withCredentials: true,
+    params: {
+      id: null,
+    },
+  }),
 };

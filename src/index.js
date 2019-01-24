@@ -67,6 +67,18 @@ class Pt {
   }
 
   /**
+   * Get payment page HTML
+   * @param {string} orderID
+   */
+  async paymentPage(orderID) {
+    const paymentPage = await this.client.request('paymentPage');
+
+    const response = await paymentPage.send({ id: orderID });
+
+    return response.data;
+  }
+
+  /**
    * Create an instance of Pt
    */
   static create() {

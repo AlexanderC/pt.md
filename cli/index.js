@@ -4,8 +4,10 @@ const Configstore = require('configstore');
 const { prompt } = require('enquirer');
 const chalk = require('chalk');
 const Table = require('terminal-table');
-const terminalLink = require('terminal-link');
 const yargs = require('yargs');
+const tempfile = require('tempfile');
+const fs = require('fs-extra');
+const opn = require('opn');
 const pkg = require('../package.json');
 const Pt = require('../src/index');
 const debug = require('../src/helper/debug')(__filename);
@@ -46,7 +48,7 @@ function display(items) {
 
   table.push(
     [
-      'Paid', 'Id', 'Order Date', 'Status', 'Cell', 'Pickup Interval', 'Shop', 'Goods Name', 'Delivery Company', 'Actions',
+      'Paid', 'Id', 'Order Date', 'Status', 'Cell', 'Pickup Interval', 'Shop', 'Goods Name', 'Delivery Company',
     ].map(col => chalk.gray(col)),
   );
 
@@ -70,12 +72,6 @@ function display(items) {
       goodsName,
       deliveryCompanyName,
     ];
-
-    if (!isPaid) {
-      row.push(terminalLink('Pay', item.paymentURI));
-    } else {
-      row.push(chalk.blue('N/A'));
-    }
 
     table.push(row);
   }
@@ -171,6 +167,54 @@ yargs // eslint-disable-line
         display(items);
       } catch (err) {
         error(err);
+      }
+    },
+  )
+  .command(
+    'pay [id]',
+    'Pay for an order',
+    (yargs) => { // eslint-disable-line
+      return yargs
+        .positional('id', {
+          describe: 'Order ID to pay',
+        })
+        .require('id', true);
+    },
+    async (argv) => {
+      const conf = config();
+      const {
+        id,
+      } = argv;
+
+      const pt = Pt.create();
+
+      try {
+        debug(`Authorize with username:${conf.get('username')} and password:${conf.get('password') ? 'YES' : 'N/A'}`);
+
+        await pt.authenticate(conf.get('username'), conf.get('password'));
+      } catch (err) {
+        error(
+          err,
+          'Configure your pt.md client using "pt.md configure" command.',
+        );
+      }
+
+      try {
+        const paymentPageFile = tempfile('.html');
+
+        debug(`Fetching payment HTML for order "${id}" to "${paymentPageFile}"`);
+
+        await fs.outputFile(paymentPageFile, await pt.paymentPage(id)); // eslint-disable-line
+
+        await opn(`file://${paymentPageFile}`, { wait: false });
+
+        setTimeout(async () => {
+          debug(`Removing temporary file: "${paymentPageFile}"`);
+
+          await fs.remove(paymentPageFile);
+        }, 3000); // @TODO figure out a smarter way
+      } catch (err) {
+        error(err, `It might be that the order "${id}" is missing.`);
       }
     },
   )

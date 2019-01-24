@@ -63,24 +63,12 @@ class Item extends Base {
   }
 
   /**
-   * Get payment URI
-   * @todo Decide to return payment URL anyway
-   */
-  get paymentURI() {
-    if (this.isPaid) {
-      return null;
-    }
-
-    return `https://pt.md/BeneficiarZone/TransactionJournal/CardPayOrder?id=${this.orderID}`;
-  }
-
-  /**
    * @inheritdoc
    */
   toJSON() {
-    const { isPaid, paymentURI } = this;
+    const { isPaid } = this;
 
-    return Object.assign({ isPaid, paymentURI }, super.toJSON());
+    return Object.assign({ isPaid }, super.toJSON());
   }
 }
 

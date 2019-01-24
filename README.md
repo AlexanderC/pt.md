@@ -17,11 +17,12 @@ CLI Tool:
 
 ```bash
 alexanderc@MacBook-Pro:~/$ pt.md --help
-pt.md [command]
+pt.md
 
 Commands:
   pt.md configure  Configure pt.md client
   pt.md list       List current deliveries
+  pt.md pay [id]   Pay for an order
 
 Options:
   --version   Show version number                                      [boolean]
@@ -65,7 +66,6 @@ total = 1;
 items = [
   {
     "isPaid": false,
-    "paymentURI": "https://pt.md/BeneficiarZone/TransactionJournal/CardPayOrder?id=123456",
     "rowNum": 1,
     "orderID": 123456,
     "orderDate": "2019-01-01T07:00:00.007Z",
@@ -91,6 +91,12 @@ items = [
   }
 ]
 */
+
+// @TODO will be improved in future
+const item = items[0];
+const paymentHTML = await pt.paymentPage(item.orderID);
+
+// ...save payment HTML to file and open it with a browser to get redirected to payment itself
 ```
 
 ## Development
