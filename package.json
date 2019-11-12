@@ -1,6 +1,6 @@
 {
   "name": "pt.md",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Library for working with https://pt.md",
   "main": "src/index.js",
   "bin": {
@@ -37,7 +37,7 @@
     "mocha": "^5.2.0"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "chalk": "^2.4.2",
     "cheerio": "^1.0.0-rc.2",
     "configstore": "^4.0.0",
@@ -46,7 +46,7 @@
     "deepmerge": "^2.2.1",
     "enquirer": "^2.3.0",
     "fs-extra": "^7.0.1",
-    "open": "0.0.5",
+    "open": "^7.0.0",
     "opn": "^5.4.0",
     "qs": "^6.6.0",
     "tempfile": "^2.0.0",
